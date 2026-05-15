@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Plus, Minus, Trash2, CheckCircle } from 'lucide-react';
+import { Plus, Minus, Trash2, CheckCircle, Utensils } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { menuService } from '../../services/menu.service';
 import { mesasService } from '../../services/mesas.service';
@@ -101,19 +101,37 @@ export default function NuevoPedidoPage() {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-4 gap-4 overflow-y-auto">
-          {prodFiltrados.map((prod) => (
-            <div key={prod.id} className="bg-card border border-border rounded-l overflow-hidden flex flex-col">
-              <div className="h-28 bg-muted flex items-center justify-center text-muted-foreground text-xs">Sin imagen</div>
-              <div className="p-3 flex flex-col gap-2 flex-1">
-                <p className="text-sm font-semibold text-foreground line-clamp-1">{prod.nombre}</p>
-                <p className="text-primary font-bold text-sm">{formatCurrency(Number(prod.precio))}</p>
-                <Button size="sm" className="w-full mt-auto" onClick={() => addItem(prod)}>
-                  <Plus size={12} /> Agregar
-                </Button>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 overflow-y-auto">
+          {prodFiltrados.map((prod) => {
+            const inCart = cart.find((i) => i.producto.id === prod.id);
+            return (
+              <div key={prod.id}
+                className={cn('bg-card border-2 rounded-xl overflow-hidden flex flex-col transition-all',
+                  inCart ? 'border-primary shadow-md shadow-primary/20' : 'border-border')}>
+                <div className="relative h-28 bg-muted overflow-hidden">
+                  {prod.imagen ? (
+                    <img src={prod.imagen} alt={prod.nombre} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Utensils size={20} className="text-muted-foreground/30" />
+                    </div>
+                  )}
+                  {inCart && (
+                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary text-white font-black text-xs flex items-center justify-center">
+                      {inCart.cantidad}
+                    </div>
+                  )}
+                </div>
+                <div className="p-3 flex flex-col gap-1.5 flex-1">
+                  <p className="text-sm font-semibold text-foreground line-clamp-2 leading-tight">{prod.nombre}</p>
+                  <p className="text-primary font-bold text-sm">{formatCurrency(Number(prod.precio))}</p>
+                  <Button size="sm" className="w-full mt-auto" onClick={() => addItem(prod)}>
+                    <Plus size={12} /> Agregar
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
