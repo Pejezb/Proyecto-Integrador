@@ -228,7 +228,7 @@ export default function MenuPage() {
           <div>
             <label className="text-sm font-medium text-foreground block mb-1.5">Imagen del producto</label>
             <div
-              className="relative h-40 rounded-xl border-2 border-dashed border-border bg-muted overflow-hidden cursor-pointer hover:border-primary/50 transition-colors"
+              className="relative h-28 rounded-xl border-2 border-dashed border-border bg-muted overflow-hidden cursor-pointer hover:border-primary/50 transition-colors"
               onClick={() => fileRef.current?.click()}
             >
               {previewUrl ? (
