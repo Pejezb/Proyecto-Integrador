@@ -30,15 +30,7 @@ export default function CocinaPage() {
 
   const marcarListo = useMutation({
     mutationFn: (id: string) => pedidosService.updateEstado(id, 'LISTO'),
-    onSuccess: (_, id) => {
-      qc.invalidateQueries({ queryKey: ['pedidosActivos'] });
-      const pedido = pedidos.find((p) => p.id === id);
-      const mesa = pedido?.mesa ? `Mesa ${pedido.mesa.numero}` : 'Para llevar';
-      toast.success(`🔔 ${mesa} — ¡Pedido listo para servir!`, {
-        duration: 5000,
-        style: { fontWeight: 'bold', fontSize: '15px' },
-      });
-    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['pedidosActivos'] }),
     onError: () => toast.error('Error al actualizar estado'),
   });
 

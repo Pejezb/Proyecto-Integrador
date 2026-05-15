@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
+import toast from 'react-hot-toast';
 
 /**
  * Suscripción global a cambios en Supabase Realtime.
  * Cuando un pedido o mesa cambia en la BD, invalida el cache de
  * React Query para que todos los componentes se actualicen al instante.
  *
- * Registrar este hook UNA sola vez en AuthLayout.
+ * Registrar este hook UNA sola vez en AuthLayout (y también en MeseroPage).
  */
 export function useRealtime() {
   const qc = useQueryClient();
@@ -18,7 +19,28 @@ export function useRealtime() {
     const channel = supabase
       .channel('restaurantos-realtime')
       // Cambios en tabla Pedido
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'Pedido' }, () => {
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'Pedido' }, (payload) => {
+        qc.invalidateQueries({ queryKey: ['pedidosActivos'] });
+        qc.invalidateQueries({ queryKey: ['pedidos'] });
+        qc.invalidateQueries({ queryKey: ['dashboard'] });
+
+        // Notificar al mesero cuando un pedido pasa a LISTO
+        const nuevo = payload.new as any;
+        const viejo = payload.old as any;
+        if (nuevo?.estado === 'LISTO' && viejo?.estado !== 'LISTO') {
+          toast('🔔 ¡Pedido listo para servir!', {
+            duration: 6000,
+            style: {
+              background: 'var(--color-success, #22c55e)',
+              color: '#fff',
+              fontWeight: 'bold',
+              fontSize: '15px',
+            },
+            icon: '🍗',
+          });
+        }
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'Pedido' }, () => {
         qc.invalidateQueries({ queryKey: ['pedidosActivos'] });
         qc.invalidateQueries({ queryKey: ['pedidos'] });
         qc.invalidateQueries({ queryKey: ['dashboard'] });

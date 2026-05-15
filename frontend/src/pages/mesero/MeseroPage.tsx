@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useRealtime } from '../../hooks/useRealtime';
 import { ArrowLeft, ShoppingCart, Plus, Minus, CheckCircle, Utensils, Grid2X2 } from 'lucide-react';
 import { mesasService } from '../../services/mesas.service';
 import { menuService } from '../../services/menu.service';
@@ -19,6 +20,7 @@ type Step = 'mesas' | 'menu' | 'confirmar';
 export default function MeseroPage() {
   const qc = useQueryClient();
   const navigate = useNavigate();
+  useRealtime(); // recibir notificación cuando cocina marca pedido como listo
   const [step, setStep]         = useState<Step>('mesas');
   const [mesaSel, setMesaSel]   = useState<Mesa | null>(null);
   const [catFiltro, setCatFiltro] = useState('todas');
