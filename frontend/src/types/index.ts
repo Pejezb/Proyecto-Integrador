@@ -71,6 +71,7 @@ export interface ItemPedido {
   cantidad: number;
   precio: number;
   subtotal: number;
+  servido: boolean;
 }
 
 export interface Pedido {

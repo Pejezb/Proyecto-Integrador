@@ -54,6 +54,7 @@ export async function getPedidosActivos(req: Request, res: Response): Promise<vo
             select: { nombre: true, imagen: true, requiereCocina: true },
           },
         },
+        orderBy: { id: 'asc' },
       },
     },
   });
@@ -224,6 +225,13 @@ export async function updateEstadoPedido(req: Request, res: Response): Promise<v
   if (estado === 'LISTO')          updateData.tiempoListo  = new Date();
 
   const updated = await prisma.$transaction(async (tx) => {
+    // Al marcar LISTO, todos los ítems pendientes quedan como servidos
+    if (estado === 'LISTO') {
+      await tx.itemPedido.updateMany({
+        where: { pedidoId: id, servido: false },
+        data: { servido: true },
+      });
+    }
     const p = await tx.pedido.update({
       where: { id },
       data: updateData,

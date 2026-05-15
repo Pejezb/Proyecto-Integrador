@@ -7,8 +7,9 @@ import { cn } from '../../utils/cn';
 import toast from 'react-hot-toast';
 import type { Pedido, ItemPedido } from '../../types';
 
+// Solo ítems que van a cocina y aún no fueron marcados como servidos
 function itemsCocina(items: ItemPedido[]) {
-  return items.filter((i) => i.producto.requiereCocina !== false);
+  return items.filter((i) => i.producto.requiereCocina !== false && !i.servido);
 }
 
 export default function CocinaPage() {

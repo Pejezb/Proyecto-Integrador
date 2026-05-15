@@ -143,4 +143,5 @@ model ItemPedido {
   cantidad   Int
   precio     Decimal
   subtotal   Decimal
+  servido    Boolean  @default(false)
 }
